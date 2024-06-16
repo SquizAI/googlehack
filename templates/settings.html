@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Settings</h1>
+        <form action="/settings" method="post" enctype="multipart/form-data">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-400">Change Avatar</label>
+                <input type="file" name="avatar" class="mt-1 block w-full text-gray-700 bg-gray-300 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-400">Select Voice</label>
+                <select name="voice_id" id="voice_id" class="mt-1 block w-full text-gray-700 bg-gray-300 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+                    <!-- Voice options will be populated by JavaScript -->
+                </select>
+            </div>
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-400">Add New Voice</label>
+                <input type="text" name="new_voice_id" placeholder="Enter new voice ID" class="mt-1 block w-full text-gray-700 bg-gray-300 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50">
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Save</button>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Fetch available voices from the server
+            fetch('/get-voices')
+                .then(response => response.json())
+                .then(data => {
+                    const voiceSelect = document.getElementById('voice_id');
+                    data.voices.forEach(voice => {
+                        const option = document.createElement('option');
+                        option.value = voice.id;
+                        option.textContent = voice.name;
+                        voiceSelect.appendChild(option);
+                    });
+                })
+                .catch(error => console.error('Error fetching voices:', error));
+        });
+    </script>
+</body>
+</html>
+

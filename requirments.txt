@@ -1,0 +1,6 @@
+pip3 install langgraph
+pip3 install -U langchain langchain_openai langchainhub tavily-python
+pip3 install google-api-python-client
+pip3 install youtube_transcript_api
+pip3 install langchain-COMMUNITY
+pip3 install langchain

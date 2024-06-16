@@ -1,0 +1,52 @@
+
+<div class="container mx-auto p-4">
+    <h1 class="text-2xl font-bold mb-4">YouTube Search</h1>
+    <form id="youtubeForm">
+        <div class="mb-4">
+            <label class="block text-sm font-medium text-gray-400">Search Query</label>
+            <input type="text" name="query" id="youtubeQuery" class="mt-1 block w-full text-gray-700 bg-gray-300 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+        </div>
+        <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+    </form>
+    <div id="youtubeResults" class="mt-8"></div>
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const youtubeForm = document.getElementById('youtubeForm');
+        const youtubeQuery = document.getElementById('youtubeQuery');
+        const youtubeResults = document.getElementById('youtubeResults');
+
+        youtubeForm.addEventListener('submit', async function(event) {
+            event.preventDefault();
+            const query = youtubeQuery.value;
+            try {
+                const response = await fetch('/youtube-search', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+                const data = await response.json();
+                displayResults(data.items);
+            } catch (error) {
+                console.error('Error fetching YouTube data:', error);
+            }
+        });
+
+        const displayResults = (results) => {
+            youtubeResults.innerHTML = '';
+            results.forEach(result => {
+                const video = document.createElement('div');
+                video.classList.add('mb-4');
+                video.innerHTML = `
+                    <h2 class="text-xl font-bold">${result.snippet.title}</h2>
+                    <p>${result.snippet.description}</p>
+                    <a href="https://www.youtube.com/watch?v=${result.id.videoId}" target="_blank" class="text-blue-400">Watch Video</a>
+                `;
+                youtubeResults.appendChild(video);
+            });
+        };
+    });
+</script>

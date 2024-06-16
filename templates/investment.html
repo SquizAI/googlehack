@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="container mx-auto p-4">
+        <h1 class="text-2xl font-bold mb-4">Investment Assistant</h1>
+        <form id="investmentForm">
+            <div class="mb-4">
+                <label class="block text-sm font-medium text-gray-400">Investment Query</label>
+                <input type="text" name="query" id="investmentQuery" class="mt-1 block w-full text-gray-700 bg-gray-300 rounded-md border border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 focus:ring-opacity-50" required>
+            </div>
+            <button type="submit" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">Search</button>
+        </form>
+        <div id="investmentResults" class="mt-8"></div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const investmentForm = document.getElementById('investmentForm');
+            const investmentQuery = document.getElementById('investmentQuery');
+            const investmentResults = document.getElementById('investmentResults');
+
+            investmentForm.addEventListener('submit', async function(event) {
+                event.preventDefault();
+                const query = investmentQuery.value;
+                try {
+                    const response = await fetch('/investment-query', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ query })
+                    });
+                    const data = await response.json();
+                    displayResults(data);
+                } catch (error) {
+                    console.error('Error fetching investment data:', error);
+                }
+            });
+
+            const displayResults = (data) => {
+                investmentResults.innerHTML = '';
+
+                if (data.stocks) {
+                    const stockSection = document.createElement('div');
+                    stockSection.classList.add('mb-4');
+                    stockSection.innerHTML = `<h2 class="text-xl font-bold">Stock Analysis</h2>`;
+                    data.stocks.forEach(stock => {
+                        const stockDiv = document.createElement('div');
+                        stockDiv.innerHTML = `
+                            <h3 class="text-lg font-bold">${stock.name}</h3>
+                            <p>${stock.analysis}</p>
+                        `;
+                        stockSection.appendChild(stockDiv);
+                    });
+                    investmentResults.appendChild(stockSection);
+                }
+
+                if (data.videos) {
+                    const videoSection = document.createElement('div');
+                    videoSection.classList.add('mb-4');
+                    videoSection.innerHTML = `<h2 class="text-xl font-bold">YouTube Videos</h2>`;
+                    data.videos.forEach(video => {
+                        const videoDiv = document.createElement('div');
+                        videoDiv.innerHTML = `
+                            <h3 class="text-lg font-bold">${video.title}</h3>
+                            <a href="https://www.youtube.com/watch?v=${video.id}" target="_blank" class="text-blue-400">Watch Video</a>
+                        `;
+                        videoSection.appendChild(videoDiv);
+                    });
+                    investmentResults.appendChild(videoSection);
+                }
+
+                if (data.news) {
+                    const newsSection = document.createElement('div');
+                    newsSection.classList.add('mb-4');
+                    newsSection.innerHTML = `<h2 class="text-xl font-bold">News Articles</h2>`;
+                    data.news.forEach(article => {
+                        const articleDiv = document.createElement('div');
+                        articleDiv.innerHTML = `
+                            <h3 class="text-lg font-bold">${article.title}</h3>
+                            <p>${article.summary}</p>
+                            <a href="${article.url}" target="_blank" class="text-blue-400">Read More</a>
+                        `;
+                        newsSection.appendChild(articleDiv);
+                    });
+                    investmentResults.appendChild(newsSection);
+                }
+
+                if (data.langchain) {
+                    const langchainSection = document.createElement('div');
+                    langchainSection.classList.add('mb-4');
+                    langchainSection.innerHTML = `<h2 class="text-xl font-bold">AI Analysis</h2>`;
+                    const responseDiv = document.createElement('div');
+                    responseDiv.innerHTML = `<p>${data.langchain}</p>`;
+                    langchainSection.appendChild(responseDiv);
+                    investmentResults.appendChild(langchainSection);
+                }
+            };
+        });
+    </script>
+</body>
+</html>
